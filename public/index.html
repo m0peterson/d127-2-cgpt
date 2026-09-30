@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#151715">
+  <meta name="description" content="Один тап, два кубика: d127 и d3 для выбора цитаты дня из сборника.">
+  <meta name="color-scheme" content="dark">
+  <title>d127 · Цитата дня</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="header">
+      <a class="wordmark" href="./" aria-label="d127, главная">d127<span class="wordmark-dot">.</span></a>
+      <span class="header-note">МАЛЕНЬКИЙ РИТУАЛ</span>
+    </header>
+
+    <nav class="switcher" aria-label="Разделы">
+      <button id="dice-tab" class="tab active" type="button" aria-pressed="true" aria-controls="dice-view">Кубики</button>
+      <button id="generator-tab" class="tab" type="button" aria-pressed="false" aria-controls="generator-view">Генератор <span class="mini-badge">ДЕМО</span></button>
+    </nav>
+
+    <main>
+      <section id="dice-view" aria-labelledby="dice-title">
+        <div class="section-heading">
+          <p class="eyebrow">СБОРНИК СТЭТХЕМА</p>
+          <h1 id="dice-title">Твоя цитата<br>на сегодня<span class="accent">.</span></h1>
+          <p class="intro">Брось кубики. Открой страницу. Найди цитату.</p>
+        </div>
+
+        <div class="dice-board" id="dice-board" aria-hidden="true">
+          <div class="die die-main">
+            <div class="die-top"><span>СТРАНИЦА</span><span class="die-type">d127</span></div>
+            <span id="d127-value" class="die-value">···</span>
+            <span class="die-range">01 / 127</span>
+          </div>
+          <div class="die die-small">
+            <div class="die-top"><span>ЦИТАТА</span><span class="die-type">d3</span></div>
+            <span id="d3-value" class="die-value">·</span>
+            <span class="die-range">01 / 03</span>
+          </div>
+        </div>
+
+        <div class="roll-result">
+          <p id="roll-summary" role="status" aria-live="polite" aria-atomic="true">Два кубика. Один ответ.</p>
+          <button id="copy-roll" class="icon-button" type="button" aria-label="Скопировать результат" disabled title="Скопировать результат">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
+          </button>
+        </div>
+
+        <button id="roll-button" class="primary-button" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 8h.01M16 8h.01M12 12h.01M8 16h.01M16 16h.01" stroke-linecap="round" stroke-width="3"/></svg>
+          <span id="roll-button-label">Бросить кубики</span>
+        </button>
+        <div class="roll-meta"><span>1–127 + 1–3</span><span>381 комбинация</span></div>
+        <p id="dice-error" class="form-message" role="alert" hidden></p>
+
+        <div class="rule-note"><span class="note-mark">«</span><p>Мудрость где-то рядом.<br><span>Возможно, на странице 127.</span></p></div>
+      </section>
+
+      <section id="generator-view" aria-labelledby="generator-title" hidden>
+        <div class="section-heading generator-heading">
+          <p class="eyebrow">СЛЕДУЮЩАЯ ГЛАВА</p>
+          <h1 id="generator-title">Своя порция<br>мудрости<span class="accent">.</span></h1>
+          <p class="intro">Добавь примеры для будущего генератора цитат.</p>
+        </div>
+        <div class="demo-notice"><span class="mini-badge">ДЕМО</span><p>Пока выдаём готовые демо-цитаты. LLM подключим позже, ключ сейчас не нужен.</p></div>
+
+        <form id="generator-form">
+          <div class="field">
+            <label for="api-key">Ключ OpenRouter <span class="field-optional">на будущее</span></label>
+            <input id="api-key" type="password" placeholder="sk-or-…" autocomplete="off" spellcheck="false" aria-describedby="key-hint">
+            <p id="key-hint" class="field-hint">Ключ не сохраняется и никуда не отправляется.</p>
+          </div>
+          <div class="field">
+            <label for="model">Модель <span class="field-optional">на будущее</span></label>
+            <input id="model" type="text" placeholder="provider/model-name" autocomplete="off" spellcheck="false" maxlength="120">
+          </div>
+          <div class="field">
+            <div class="field-heading"><label for="examples">Примеры цитат</label><span id="examples-count" class="field-optional">0 / 100</span></div>
+            <textarea id="examples" rows="6" maxlength="100000" aria-describedby="examples-hint" placeholder="Одна цитата на строку"></textarea>
+            <p id="examples-hint" class="field-hint">Одна цитата на строку. Примеры сохраняются на этом устройстве.</p>
+            <label class="import-button" for="examples-file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 16V3m-4 4 4-4 4 4M4 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg>Загрузить .txt / .json<input id="examples-file" class="file-input" type="file" accept=".txt,.json,text/plain,application/json"></label>
+          </div>
+          <p id="generator-message" class="form-message" role="status" hidden></p>
+          <button id="generate-button" class="primary-button" type="submit"><span id="generate-button-label">Попробовать демо</span></button>
+        </form>
+
+        <article id="generated-result" class="quote-card" aria-live="polite" aria-atomic="true" hidden>
+          <p class="eyebrow">ДЕМО-ЦИТАТА</p>
+          <blockquote id="generated-quote"></blockquote>
+          <p class="field-hint">Мемная пародия. Не настоящая цитата актёра.</p>
+        </article>
+      </section>
+    </main>
+    <footer><span>d127-2-cgpt</span><span>СЛУЧАЙНОСТЬ РЕШАЕТ</span></footer>
+  </div>
+  <noscript>Включи JavaScript, чтобы бросать кубики.</noscript>
+</body>
+</html>
